@@ -1,0 +1,18 @@
+# Python virtual environment
+.venv/
+__pycache__/
+
+# Simulation output and waves
+sim/
+*.vcd
+*.out
+
+# Vivado build artifacts and logs
+syn/
+*.log
+*.jou
+.Xil/
+
+# TerosHDL metadata and IDE caches
+.teros/
+.vscode/

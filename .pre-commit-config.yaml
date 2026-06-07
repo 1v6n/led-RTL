@@ -1,0 +1,26 @@
+repos:
+  - repo: local
+    hooks:
+      - id: verible-verilog-format
+        name: Verible Verilog Format
+        entry: verible-verilog-format
+        args:
+          - --flagfile=.verible-format
+          - --inplace
+        language: system
+        files: '\.(v|sv|vh|svh)$'
+
+      - id: verible-verilog-lint
+        name: Verible Verilog Lint
+        entry: verible-verilog-lint
+        args:
+          - --rules_config_search
+        language: system
+        files: '\.(v|sv|vh|svh)$'
+
+      - id: verilator-lint
+        name: Verilator Linting
+        entry: bash tools/verilator_lint.sh
+        language: system
+        pass_filenames: false
+        files: '\.(v|sv|vh|svh)$'
