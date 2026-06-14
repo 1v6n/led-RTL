@@ -1,14 +1,15 @@
-`timescale 1ns / 1ps
+`timescale 1ps / 1ps
 
 module counter #(
     parameter NB_COUNT_LIMIT = 2
 ) (
-    output wire o_shift,
-    input wire i_enable,
-    input wire [NB_COUNT_LIMIT-1:0] i_sel_count_limit,
-    input wire i_reset,
-    input wire clock
+    output wire                      o_shift,
+    input  wire                      i_enable,
+    input  wire [NB_COUNT_LIMIT-1:0] i_sel_count_limit,
+    input  wire                      i_reset,
+    input  wire                      i_clock
 );
+
   localparam NbCounter = 32;
   reg  [NbCounter-1:0] counter;
   wire [NbCounter-1:0] counter_next;
@@ -23,9 +24,9 @@ module counter #(
                         (i_sel_count_limit == 2'b11 && counter >= LIMIT_3) ? 'd0:
                                                                                 counter + 1'b1;
 
-  always @(posedge clock or negedge i_reset) begin
-    if (~i_reset) begin
-      counter <= 'd0;
+  always @(posedge i_clock or negedge i_reset) begin
+    if (!i_reset) begin
+      counter <= '0;
     end else if (~i_enable) begin
       counter <= counter;
     end else begin
@@ -33,7 +34,6 @@ module counter #(
     end
   end
 
-  assign o_shift = counter == 'd0;
+  assign o_shift = (counter == '0) && i_enable;
 
 endmodule
-
