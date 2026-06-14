@@ -1,6 +1,12 @@
 repos:
   - repo: local
     hooks:
+      - id: collapse-blank-lines
+        name: Collapse Multiple Blank Lines
+        entry: python3 -c "import sys, re; [open(f, 'w', newline='').write(re.sub(r'(\r?\n){3,}', r'\1\1', c)) for f in sys.argv[1:] for c in [open(f, 'r', newline='').read()]]"
+        language: system
+        files: '\.(v|sv|vh|svh|cpp|h|sh|md)$'
+
       - id: verible-verilog-format
         name: Verible Verilog Format
         entry: verible-verilog-format

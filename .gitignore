@@ -6,6 +6,8 @@ __pycache__/
 sim/
 *.vcd
 *.out
+obj_dir/
+sim.f
 
 # Vivado build artifacts and logs
 syn/
@@ -16,3 +18,8 @@ syn/
 # TerosHDL metadata and IDE caches
 .teros/
 .vscode/
+
+# Ignore local compilation command/file lists
+*.f
+*.args
+*.rsp
