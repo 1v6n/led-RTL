@@ -23,3 +23,7 @@ syn/
 *.f
 *.args
 *.rsp
+
+# Temporary backups and debug outputs
+*.bak
+debug.txt
