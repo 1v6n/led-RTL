@@ -1,8 +1,8 @@
 `timescale 1ps / 1ps
 
 module cmod_a7_top #(
-    parameter NB_PROB = 3,
-    parameter NB_LED  = 3
+    parameter NB_PROB = 4,
+    parameter NB_LED  = 4
 
 ) (
     input  wire       sys_clk,
