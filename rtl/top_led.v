@@ -2,7 +2,11 @@
 
 module top_led #(
     parameter N_SWITCH = 4,
-    parameter N_LED    = 4
+    parameter N_LED    = 4,
+    parameter LIMIT_0  = 32'h0010_00000,
+    parameter LIMIT_1  = 32'h0020_00000,
+    parameter LIMIT_2  = 32'h0040_00000,
+    parameter LIMIT_3  = 32'h0080_00000
 ) (
     output wire [N_LED    - 1 : 0] o_led,
     output wire [N_LED    - 1 : 0] o_led_b,
@@ -15,7 +19,13 @@ module top_led #(
   wire                 shift;
   wire [N_LED - 1 : 0] led_enable;
 
-  counter u_counter (
+  counter #(
+      .NB_COUNT_LIMIT(2),
+      .LIMIT_0       (LIMIT_0),
+      .LIMIT_1       (LIMIT_1),
+      .LIMIT_2       (LIMIT_2),
+      .LIMIT_3       (LIMIT_3)
+  ) u_counter (
       .o_shift          (shift),
       .i_enable         (i_sw[0]),
       .i_sel_count_limit(i_sw[2:1]),
@@ -32,6 +42,6 @@ module top_led #(
 
   assign o_led   = led_enable;
   assign o_led_b = (i_sw[3]) ? '1 : '0;
-  assign o_led_g = (!i_sw[3]) ? '0 : '1;
+  assign o_led_g = (i_sw[3]) ? '0 : '1;
 
 endmodule
