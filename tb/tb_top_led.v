@@ -13,10 +13,18 @@ module tb_top_led;
   wire [NLED    - 1 : 0] o_led;
   wire [NLED    - 1 : 0] o_led_b;
   wire [NLED    - 1 : 0] o_led_g;
+  localparam SimLimit_0 = 32'd1;
+  localparam SimLimit_1 = 32'd2;
+  localparam SimLimit_2 = 32'd3;
+  localparam SimLimit_3 = 32'd4;
 
   top_led #(
       .N_SWITCH(NSWITCH),
-      .N_LED   (NLED)
+      .N_LED   (NLED),
+      .LIMIT_0 (SimLimit_0),
+      .LIMIT_1 (SimLimit_1),
+      .LIMIT_2 (SimLimit_2),
+      .LIMIT_3 (SimLimit_3)
   ) uut (
       .i_clock(i_clock),
       .i_reset(i_reset),
@@ -34,75 +42,26 @@ module tb_top_led;
     end
   end
 
-  task reset_uut();
+  task automatic reset_uut();
     begin
+      i_sw    = '0;
       i_reset = 1'b0;
-      repeat (5) @(posedge i_clock);
-      i_reset = ~i_reset;
+      repeat (2) @(posedge i_clock);
+      i_reset = 1'b1;
+      repeat (2) @(posedge i_clock);
     end
   endtask
 
-  task test_reset();
-    begin
-      reset_uut();
-      assert (o_led == 4'b1000) $display("o_led reset test pass");
-      else $error("o_led reset test fail");
-    end
-  endtask
-
-  task test_clock();
-    realtime t1;
-    realtime t2;
-    realtime period;
-    begin
-      @(posedge i_clock);
-      t1 = $realtime;
-      @(posedge i_clock);
-      t2     = $realtime;
-
-      period = t2 - t1;
-      $display(period);
-      assert (period >= CLKPERIOD - 1 && period <= CLKPERIOD + 1) $display("Period test pass");
-      else $error("Period test fail");
-    end
-  endtask
-
-  task test_limit();
-    begin
-      i_sw[2:1] = 2'b00;
-      force uut.u_counter.counter = 32'h0010_00000 - 5;
-      @(posedge i_clock);
-      release uut.u_counter.counter;
-      i_sw[0] = 1'b1;
-      repeat (7) @(posedge i_clock);
-      assert (uut.u_counter.counter == 0) $display("Limit 0 wrap check pass");
-      else $error("Limit 0 wrap check fail");
-    end
-  endtask
-
+  `include "tests/test_reset.vh"
   initial begin
     $dumpfile("sim_output.vcd");
     $dumpvars(0, tb_top_led);
-    i_sw = '0;
-
     $display("--- Running Main Test Suite ---");
 
     test_reset();
-    test_clock();
-    test_limit();
 
     $display("--- All Tests Completed ---");
     $finish;
   end
-
-  //---------------------------------------------------------
-  // TODO #4: Automated Check / Assertion (Bonus Challenge)
-  // Implement a check that verifies that when i_sw[3] is 1:
-  //   - o_led_b is 4'b1111
-  //   - o_led_g is 4'b0000
-  // And when i_sw[3] is 0:
-  //   - o_led_b is 4'b0000
-  //   - o_led_g is 4'b1111
-  //---------------------------------------------------------
 
 endmodule
