@@ -34,6 +34,7 @@ echo "Compiling $TOP with Verilator (native SystemVerilog mode)..."
 # -f sim.f: Use generated simulation filelist
 verilator --binary --trace -j $(nproc) \
   -Wall \
+  -Itb \
   --top-module "$TOP" \
   -f sim.f
 
