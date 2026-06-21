@@ -53,12 +53,16 @@ module tb_top_led;
   endtask
 
   `include "tests/test_reset.vh"
+  `include "tests/test_enable.vh"
+
   initial begin
     $dumpfile("sim_output.vcd");
     $dumpvars(0, tb_top_led);
     $display("--- Running Main Test Suite ---");
 
     test_reset();
+    repeat ($urandom_range(5, 20)) @(posedge i_clock);
+    test_enable();
 
     $display("--- All Tests Completed ---");
     $finish;
