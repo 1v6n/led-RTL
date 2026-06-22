@@ -40,4 +40,4 @@ verilator --binary --trace -j $(nproc) \
 
 echo ""
 echo "Running simulation..."
-"./obj_dir/V$TOP"
+"./obj_dir/V$TOP" "$@"
