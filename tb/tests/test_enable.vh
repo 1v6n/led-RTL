@@ -9,7 +9,7 @@ task automatic run_enable_iteration(ref int pass_count, ref int fail_count);
 
     if (o_led != pre_enable_led) begin
       fail_count++;
-      $warning("[%0t] [FAIL] o_led shifted while disabled! Start: %0d, Now: %0d", $time,
+      $warning("[%0t] [FAIL] o_led shifted while disabled. Start: %0d, Now: %0d", $time,
                pre_enable_led, o_led);
       return;
     end
@@ -31,8 +31,8 @@ task automatic run_enable_iteration(ref int pass_count, ref int fail_count);
 
       if (!shifted) begin
         fail_count++;
-        $error("[%0t] [FAIL] o_led did not shift while enabled! Start: %0d, Now: %0d", $time,
-               pre_enable_led, o_led);
+        $warning("[%0t] [FAIL] o_led did not shift while enabled. Start: %0d, Now: %0d", $time,
+                 pre_enable_led, o_led);
         return;
       end
     end
@@ -43,7 +43,7 @@ task automatic run_enable_iteration(ref int pass_count, ref int fail_count);
     repeat ($urandom_range(21, 40)) @(posedge i_clock);
     if (o_led != mid_enable_led) begin
       fail_count++;
-      $warning("[%0t] [FAIL] o_led did not freeze when disabled! Frozen at: %0d, Now: %0d", $time,
+      $warning("[%0t] [FAIL] o_led did not freeze when disabled. Frozen at: %0d, Now: %0d", $time,
                mid_enable_led, o_led);
       return;
     end
@@ -60,7 +60,8 @@ task automatic test_enable();
     iterations = $urandom_range(50, 100);
     $display("[%0t] [INFO] Starting test_enable (%0d iterations)...", $time, iterations);
 
-    repeat (iterations) begin
+    for (int i = 0; i < iterations; i++) begin
+      iteration_id = i;
       run_enable_iteration(pass_count, fail_count);
     end
 

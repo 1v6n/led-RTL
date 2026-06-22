@@ -17,6 +17,8 @@ module tb_top_led;
   localparam SimLimit_1 = 32'd2;
   localparam SimLimit_2 = 32'd3;
   localparam SimLimit_3 = 32'd4;
+  integer iteration_id = 0;
+  integer test_id = 0;
 
   top_led #(
       .N_SWITCH(NSWITCH),
@@ -54,16 +56,26 @@ module tb_top_led;
 
   `include "tests/test_reset.vh"
   `include "tests/test_enable.vh"
+  `include "tests/test_clock.vh"
 
   initial begin
     $dumpfile("sim_output.vcd");
     $dumpvars(0, tb_top_led);
     $display("--- Running Main Test Suite ---");
 
+    test_id = 0;
     test_reset();
-    repeat ($urandom_range(5, 20)) @(posedge i_clock);
+    repeat (2) @(posedge i_clock);
+    test_id = 1;
+    test_reset_disable();
+    repeat (2) @(posedge i_clock);
+    test_id = 2;
     test_enable();
-
+    repeat (2) @(posedge i_clock);
+    test_id = 3;
+    test_random_shift();
+    repeat (2) @(posedge i_clock);
+    test_id = 0;
     $display("--- All Tests Completed ---");
     $finish;
   end
