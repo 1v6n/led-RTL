@@ -33,8 +33,8 @@ task automatic run_random_shift_test(ref int pass_count, ref int fail_count);
     pass_count++;
   end else begin
     fail_count++;
-    $warning("Random shift test fail for limit %0d: Expected period ~%0t, got %0t", expected_lim,
-             expected_period, t2 - t1);
+    $warning("[%0t] [FAIL] Random shift test fail for limit %0d: Expected period ~%0t, got %0t",
+             $time, expected_lim, expected_period, t2 - t1);
   end
 endtask
 
@@ -44,11 +44,18 @@ task automatic test_random_shift();
   int          fail_count = 0;
   begin
     iterations = $urandom_range(50, 100);
+    $display("[%0t] [INFO] Starting test_random_shift (%0d iterations)...", $time, iterations);
     for (int i = 0; i < iterations; i++) begin
       iteration_id = i;
       run_random_shift_test(pass_count, fail_count);
     end
-    $display("Random shift test completed: %0d passed, %0d failed", pass_count, fail_count);
+    if (fail_count == 0) begin
+      $display("[%0t] [PASS] test_random_shift completed successfully: %0d/%0d checks passed.",
+               $time, pass_count, pass_count + fail_count);
+    end else begin
+      $error("[%0t] [FAIL] test_random_shift completed with errors: %0d failures.", $time,
+             fail_count);
+    end
   end
 endtask
 
