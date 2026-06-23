@@ -96,8 +96,8 @@ task automatic test_random_limit();
       $display("[%0t] [PASS] test_random_limit completed successfully: %0d/%0d checks passed.",
                $time, pass_count, pass_count + fail_count);
     end else begin
-      $error("[%0t] [FAIL] test_random_limit completed with errors: %0d failures.", $time,
-             fail_count);
+      $error("[%0t] [FAIL] test_random_limit completed with errors: %0d failures out of %0d runs.",
+             $time, fail_count, iterations);
     end
   end
 endtask

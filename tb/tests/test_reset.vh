@@ -56,8 +56,8 @@ task automatic test_reset();
       $display("[%0t] [PASS] test_reset completed successfully: %0d/%0d runs passed.", $time,
                pass_count, iterations);
     end else begin
-      $warning("[%0t] [FAIL] test_reset completed with warnings: %0d failures out of %0d runs.",
-               $time, fail_count, iterations);
+      $error("[%0t] [FAIL] test_reset completed with errors: %0d failures out of %0d runs.", $time,
+             fail_count, iterations);
     end
   end
 endtask
@@ -80,9 +80,8 @@ task automatic test_reset_disable();
       $display("[%0t] [PASS] test_reset_disable completed successfully: %0d/%0d runs passed.",
                $time, pass_count, iterations);
     end else begin
-      $warning(
-          "[%0t] [FAIL] test_reset_disable completed with warnings: %0d failures out of %0d runs.",
-          $time, fail_count, iterations);
+      $error("[%0t] [FAIL] test_reset_disable completed with errors: %0d failures out of %0d runs.",
+             $time, fail_count, iterations);
     end
   end
 endtask
