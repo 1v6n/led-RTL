@@ -25,6 +25,7 @@ module tb_top_led;
   bit     cfg_run_clock;
   bit     cfg_run_limit;
   bit     cfg_run_random_limit;
+  bit     cfg_run_led;
   bit     has_test_filter;
   string  test_name;
 
@@ -67,6 +68,7 @@ module tb_top_led;
   `include "tests/test_clock.vh"
   `include "tests/test_limit.vh"
   `include "tests/test_random_limit.vh"
+  `include "tests/test_led.vh"
 
   initial begin
     $timeformat(-6, 3, " us", 10);
@@ -81,6 +83,7 @@ module tb_top_led;
     cfg_run_clock         = !has_test_filter || (test_name == "test_clock");
     cfg_run_limit         = !has_test_filter || (test_name == "test_limit");
     cfg_run_random_limit  = !has_test_filter || (test_name == "test_random_limit");
+    cfg_run_led           = !has_test_filter || (test_name == "test_led");
 
     $display("--- Running Main Test Suite ---");
 
@@ -117,6 +120,12 @@ module tb_top_led;
     if (cfg_run_random_limit) begin
       test_id = 6;
       test_random_limit();
+      repeat (2) @(posedge i_clock);
+    end
+
+    if (cfg_run_led) begin
+      test_id = 7;
+      test_led();
       repeat (2) @(posedge i_clock);
     end
 
