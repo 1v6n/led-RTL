@@ -25,32 +25,33 @@ task automatic random_limit_change();
   begin
     forever begin
       repeat ($urandom_range(1, 15)) @(posedge i_clock);
-      #1ps;
+      #1000ps;
       i_sw[2:1] = 2'($urandom_range(0, 3));
     end
   end
 endtask
 
-task automatic run_checker_model(input int num_cycles, output int pass_count,
-                                 output int fail_count);
-  int       expected_counter = 0;
-  reg [3:0] expected_leds = 4'b1000;
+task automatic run_checker_model(output int pass_count, output int fail_count);
+  int                expected_counter = 0;
+  reg          [3:0] expected_leds = 4'b1000;
+  int unsigned       num_cycles = $urandom_range(100, 200);
+
   begin
+
     pass_count = 0;
     fail_count = 0;
     repeat (num_cycles) begin
-      step_reference_model(i_sw[0], i_sw[2:1], expected_counter, expected_leds);
-
-      @(posedge i_clock);
-
       if (o_led !== expected_leds) begin
         fail_count++;
-        $error({"[%0t] [FAIL] Random limit mismatch! ",
-                "o_led = %b (Expected: %b), Switch: %b, Expected Counter: %0d"}, $time, o_led,
-                 expected_leds, i_sw[2:1], expected_counter);
+        $error("[%0t] [FAIL] Random limit mismatch! o_led=%b (Exp:%b) Sw:%b", $time, o_led,
+               expected_leds, i_sw[2:1]);
       end else begin
         pass_count++;
       end
+
+      step_reference_model(i_sw[0], i_sw[2:1], expected_counter, expected_leds);
+
+      @(negedge i_clock);
     end
   end
 endtask
@@ -63,7 +64,6 @@ task automatic run_limit_random_test(ref int pass_count, ref int fail_count);
     reset_uut();
     i_sw[2:1] = 2'b00;
     i_sw[0]   = 1'b1;
-    cycles    = $urandom_range(100, 200);
 
     fork
       begin
@@ -71,7 +71,7 @@ task automatic run_limit_random_test(ref int pass_count, ref int fail_count);
       end
 
       begin
-        run_checker_model(cycles, local_pass, local_fail);
+        run_checker_model(local_pass, local_fail);
       end
     join_any
     disable fork;
@@ -97,7 +97,7 @@ task automatic test_random_limit();
                $time, pass_count, pass_count + fail_count);
     end else begin
       $error("[%0t] [FAIL] test_random_limit completed with errors: %0d failures out of %0d runs.",
-             $time, fail_count, iterations);
+             $time, fail_count, pass_count + fail_count);
     end
   end
 endtask

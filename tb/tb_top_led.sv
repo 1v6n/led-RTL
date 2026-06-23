@@ -60,15 +60,16 @@ module tb_top_led;
       repeat (2) @(posedge i_clock);
       i_reset = 1'b1;
       repeat (2) @(posedge i_clock);
+      @(negedge i_clock);
     end
   endtask
 
-  `include "tests/test_reset.vh"
-  `include "tests/test_enable.vh"
-  `include "tests/test_clock.vh"
-  `include "tests/test_limit.vh"
-  `include "tests/test_random_limit.vh"
-  `include "tests/test_led.vh"
+  `include "tests/test_reset.svh"
+  `include "tests/test_enable.svh"
+  `include "tests/test_clock.svh"
+  `include "tests/test_limit.svh"
+  `include "tests/test_random_limit.svh"
+  `include "tests/test_led.svh"
 
   initial begin
     $timeformat(-6, 3, " us", 10);

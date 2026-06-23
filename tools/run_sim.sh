@@ -11,11 +11,11 @@ TARGET="${1:-tb_top_led}"
 # 1. Generate simulation filelist dynamically
 echo "Generating simulation filelist (sim.f) for $TARGET..."
 
-# Find all design files in rtl/ (excluding cmod_a7_top.v)
-find rtl/ -name "*.v" -not -name "cmod_a7_top.v" > sim.f
+# Find all design files in rtl/ (excluding cmod_a7_top.sv)
+find rtl/ -name "*.sv" -not -name "cmod_a7_top.sv" > sim.f
 
 # 2. Automatically find and append the requested testbench from tb/
-TB_FILE="tb/${TARGET}.v"
+TB_FILE="tb/${TARGET}.sv"
 if [ -f "$TB_FILE" ]; then
   echo "$TB_FILE" >> sim.f
   TOP="$TARGET"

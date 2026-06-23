@@ -4,6 +4,7 @@ task automatic run_limit_test(ref int pass_count, ref int fail_count);
     i_sw[2:1] = 2'b00;
     i_sw[0]   = 1'b1;
     repeat (SimLimit_0 + 1) @(posedge i_clock);
+    @(negedge i_clock);
     if (o_led[2] == 1'b1) begin
       pass_count++;
     end else begin
@@ -16,6 +17,7 @@ task automatic run_limit_test(ref int pass_count, ref int fail_count);
     i_sw[2:1] = 2'b01;
     i_sw[0]   = 1'b1;
     repeat (SimLimit_1 + 1) @(posedge i_clock);
+    @(negedge i_clock);
     if (o_led[2] == 1'b1) begin
       pass_count++;
     end else begin
@@ -28,6 +30,7 @@ task automatic run_limit_test(ref int pass_count, ref int fail_count);
     i_sw[2:1] = 2'b10;
     i_sw[0]   = 1'b1;
     repeat (SimLimit_2 + 1) @(posedge i_clock);
+    @(negedge i_clock);
     if (o_led[2] == 1'b1) begin
       pass_count++;
     end else begin
@@ -40,6 +43,7 @@ task automatic run_limit_test(ref int pass_count, ref int fail_count);
     i_sw[2:1] = 2'b11;
     i_sw[0]   = 1'b1;
     repeat (SimLimit_3 + 1) @(posedge i_clock);
+    @(negedge i_clock);
     if (o_led[2] == 1'b1) begin
       pass_count++;
     end else begin
@@ -52,9 +56,10 @@ task automatic run_limit_test(ref int pass_count, ref int fail_count);
     i_sw[2:1] = 2'b11;
     i_sw[0]   = 1'b1;
     repeat (SimLimit_3) @(posedge i_clock);
+    @(negedge i_clock);
     i_sw[2:1] = 2'b01;
     repeat (1) @(posedge i_clock);
-
+    @(negedge i_clock);
     if (o_led[2] == 1'b1) begin
       pass_count++;
     end else begin
