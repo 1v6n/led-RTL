@@ -38,50 +38,20 @@ task automatic run_reset_iteration(input bit count_enabled, ref int pass_count, 
   end
 endtask
 
-task automatic test_reset();
-  int unsigned iterations;
-  int          pass_count = 0;
-  int          fail_count = 0;
+`DEFINE_TEST_RUNNER(reset, run_reset_iteration(.count_enabled(1'b1), .pass_count(pass_count),
+                                               .fail_count(fail_count)), iterations)
 
-  begin
-    iterations = $urandom_range(50, 100);
-    $display("[%0t] [INFO] Starting test_reset (%0d iterations)...", $time, iterations);
+`DEFINE_TEST_RUNNER(reset_disable, run_reset_iteration(.count_enabled(1'b0),
+                                                       .pass_count(pass_count),
+                                                       .fail_count(fail_count)), iterations)
 
-    for (int i = 0; i < iterations; i++) begin
-      iteration_id = i;
-      run_reset_iteration(.count_enabled(1'b1), .pass_count(pass_count), .fail_count(fail_count));
-    end
+`DEFINE_TEST_SUITE(reset,
+                   `RUN_TEST_STEP(1, test_reset())
+  `RUN_TEST_STEP(2, test_reset_disable()))
 
-    if (fail_count == 0) begin
-      $display("[%0t] [PASS] test_reset completed successfully: %0d/%0d runs passed.", $time,
-               pass_count, iterations);
-    end else begin
-      $error("[%0t] [FAIL] test_reset completed with errors: %0d failures out of %0d runs.", $time,
-             fail_count, iterations);
-    end
-  end
-endtask
+`ifndef COMBINED_TESTS
+initial begin
+  run_test_reset_suite();
+end
+`endif
 
-task automatic test_reset_disable();
-  int unsigned iterations;
-  int          pass_count = 0;
-  int          fail_count = 0;
-
-  begin
-    iterations = $urandom_range(50, 100);
-    $display("[%0t] [INFO] Starting test_reset_disable (%0d iterations)...", $time, iterations);
-
-    for (int i = 0; i < iterations; i++) begin
-      iteration_id = i;
-      run_reset_iteration(.count_enabled(1'b0), .pass_count(pass_count), .fail_count(fail_count));
-    end
-
-    if (fail_count == 0) begin
-      $display("[%0t] [PASS] test_reset_disable completed successfully: %0d/%0d runs passed.",
-               $time, pass_count, iterations);
-    end else begin
-      $error("[%0t] [FAIL] test_reset_disable completed with errors: %0d failures out of %0d runs.",
-             $time, fail_count, iterations);
-    end
-  end
-endtask

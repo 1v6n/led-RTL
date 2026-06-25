@@ -21,24 +21,13 @@ task automatic run_test_led(ref int pass_count, ref int fail_count);
   end
 endtask
 
-task automatic test_led();
-  int unsigned iterations;
-  int          pass_count = 0;
-  int          fail_count = 0;
-  begin
-    iterations = $urandom_range(50, 100);
-    $display("[%0t] [INFO] Starting test_led (%0d iterations)...", $time, iterations);
-    for (int i = 0; i < iterations; i++) begin
-      iteration_id = i;
-      run_test_led(pass_count, fail_count);
-    end
-    if (fail_count == 0) begin
-      $display("[%0t] [PASS] test_led completed successfully: %0d/%0d checks passed.", $time,
-               pass_count, pass_count + fail_count);
-    end else begin
-      $error("[%0t] [FAIL] test_led completed with errors: %0d failures out of %0d runs.", $time,
-             fail_count, iterations);
-    end
-  end
-endtask
+`DEFINE_TEST_RUNNER(led, run_test_led(pass_count, fail_count), pass_count + fail_count)
+
+`DEFINE_TEST_SUITE(led, `RUN_TEST_STEP(7, test_led()))
+
+`ifndef COMBINED_TESTS
+initial begin
+  run_test_led_suite();
+end
+`endif
 

@@ -72,24 +72,13 @@ task automatic run_limit_test(ref int pass_count, ref int fail_count);
 
 endtask
 
-task automatic test_limit();
-  int unsigned iterations;
-  int          pass_count = 0;
-  int          fail_count = 0;
-  begin
-    iterations = $urandom_range(50, 100);
-    $display("[%0t] [INFO] Starting test_limit (%0d iterations)...", $time, iterations);
-    for (int i = 0; i < iterations; i++) begin
-      iteration_id = i;
-      run_limit_test(pass_count, fail_count);
-    end
-    if (fail_count == 0) begin
-      $display("[%0t] [PASS] test_limit completed successfully: %0d/%0d checks passed.", $time,
-               pass_count, pass_count + fail_count);
-    end else begin
-      $error("[%0t] [FAIL] test_limit completed with errors: %0d failures out of %0d runs.", $time,
-             fail_count, iterations);
-    end
-  end
-endtask
+`DEFINE_TEST_RUNNER(limit, run_limit_test(pass_count, fail_count), pass_count + fail_count)
+
+`DEFINE_TEST_SUITE(limit, `RUN_TEST_STEP(5, test_limit()))
+
+`ifndef COMBINED_TESTS
+initial begin
+  run_test_limit_suite();
+end
+`endif
 

@@ -52,25 +52,13 @@ task automatic run_enable_iteration(ref int pass_count, ref int fail_count);
   end
 endtask
 
-task automatic test_enable();
-  int unsigned iterations;
-  int          pass_count = 0;
-  int          fail_count = 0;
-  begin
-    iterations = $urandom_range(50, 100);
-    $display("[%0t] [INFO] Starting test_enable (%0d iterations)...", $time, iterations);
+`DEFINE_TEST_RUNNER(enable, run_enable_iteration(pass_count, fail_count), iterations)
 
-    for (int i = 0; i < iterations; i++) begin
-      iteration_id = i;
-      run_enable_iteration(pass_count, fail_count);
-    end
+`DEFINE_TEST_SUITE(enable, `RUN_TEST_STEP(3, test_enable()))
 
-    if (fail_count == 0) begin
-      $display("[%0t] [PASS] test_enable completed successfully: %0d/%0d runs passed.", $time,
-               pass_count, iterations);
-    end else begin
-      $error("[%0t] [FAIL] test_enable completed with errors: %0d failures out of %0d runs.",
-             $time, fail_count, iterations);
-    end
-  end
-endtask
+`ifndef COMBINED_TESTS
+initial begin
+  run_test_enable_suite();
+end
+`endif
+

@@ -35,23 +35,25 @@ task automatic run_checker_model(output int pass_count, output int fail_count);
   int                expected_counter = 0;
   reg          [3:0] expected_leds = 4'b1000;
   int unsigned       num_cycles = $urandom_range(100, 200);
-
+  reg          [1:0] sampled_limit_sel;
+  bit                sampled_enable;
   begin
 
     pass_count = 0;
     fail_count = 0;
     repeat (num_cycles) begin
+      @(posedge i_clock);
+      #500ps;
+      sampled_limit_sel = i_sw[2:1];
+      sampled_enable    = i_sw[0];
+      step_reference_model(sampled_enable, sampled_limit_sel, expected_counter, expected_leds);
       if (o_led !== expected_leds) begin
         fail_count++;
         $error("[%0t] [FAIL] Random limit mismatch! o_led=%b (Exp:%b) Sw:%b", $time, o_led,
-               expected_leds, i_sw[2:1]);
+               expected_leds, sampled_limit_sel);
       end else begin
         pass_count++;
       end
-
-      step_reference_model(i_sw[0], i_sw[2:1], expected_counter, expected_leds);
-
-      @(negedge i_clock);
     end
   end
 endtask
@@ -81,23 +83,14 @@ task automatic run_limit_random_test(ref int pass_count, ref int fail_count);
   end
 endtask
 
-task automatic test_random_limit();
-  int unsigned iterations;
-  int          pass_count = 0;
-  int          fail_count = 0;
-  begin
-    iterations = $urandom_range(50, 100);
-    $display("[%0t] [INFO] Starting test_random_limit (%0d iterations)...", $time, iterations);
-    for (int i = 0; i < iterations; i++) begin
-      iteration_id = i;
-      run_limit_random_test(pass_count, fail_count);
-    end
-    if (fail_count == 0) begin
-      $display("[%0t] [PASS] test_random_limit completed successfully: %0d/%0d checks passed.",
-               $time, pass_count, pass_count + fail_count);
-    end else begin
-      $error("[%0t] [FAIL] test_random_limit completed with errors: %0d failures out of %0d runs.",
-             $time, fail_count, pass_count + fail_count);
-    end
-  end
-endtask
+`DEFINE_TEST_RUNNER(random_limit, run_limit_random_test(pass_count, fail_count),
+                    pass_count + fail_count)
+
+`DEFINE_TEST_SUITE(random_limit, `RUN_TEST_STEP(6, test_random_limit()))
+
+`ifndef COMBINED_TESTS
+initial begin
+  run_test_random_limit_suite();
+end
+`endif
+
