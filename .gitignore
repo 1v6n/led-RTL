@@ -27,3 +27,6 @@ syn/
 # Temporary backups and debug outputs
 *.bak
 debug.txt
+tb/current_test.svh
+graphify-out/
+.agents/

@@ -32,12 +32,23 @@ echo "Compiling $TOP with Verilator (native SystemVerilog mode)..."
 # -Wall: Enable linter warnings
 # --top-module $TOP: Target the selected testbench
 # -f sim.f: Use generated simulation filelist
+TEST_ARGS=()
+DEFINE_ARGS=()
+if [ -n "${TESTFILE:-}" ]; then
+  TEST_BASE="$(basename "$TESTFILE" .svh)"
+  TEST_ARGS+=("+TESTNAME=${TEST_BASE}")
+  cp "$TESTFILE" tb/current_test.svh
+else
+  DEFINE_ARGS+=("-DCOMBINED_TESTS")
+fi
+
 verilator --binary --trace -j $(nproc) \
   -Wall \
   -Itb \
+  "${DEFINE_ARGS[@]}" \
   --top-module "$TOP" \
   -f sim.f
 
 echo ""
 echo "Running simulation..."
-"./obj_dir/V$TOP" "$@"
+"./obj_dir/V$TOP" "${TEST_ARGS[@]}" "$@"
