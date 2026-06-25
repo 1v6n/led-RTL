@@ -19,15 +19,6 @@ module tb_top_led;
   localparam SimLimit_3 = 32'd4;
   integer iteration_id = 0;
   integer test_id = 0;
-  bit     cfg_run_reset;
-  bit     cfg_run_reset_disable;
-  bit     cfg_run_enable;
-  bit     cfg_run_clock;
-  bit     cfg_run_limit;
-  bit     cfg_run_random_limit;
-  bit     cfg_run_led;
-  bit     has_test_filter;
-  string  test_name;
 
   top_led #(
       .N_SWITCH(NSWITCH),
@@ -64,75 +55,22 @@ module tb_top_led;
     end
   endtask
 
-  `include "tests/test_reset.svh"
-  `include "tests/test_enable.svh"
-  `include "tests/test_clock.svh"
-  `include "tests/test_limit.svh"
-  `include "tests/test_random_limit.svh"
-  `include "tests/test_led.svh"
-
+  string vcd_file;
   initial begin
     $timeformat(-6, 3, " us", 10);
-    $dumpfile("sim_output.vcd");
+    if ($value$plusargs("VCD=%s", vcd_file)) begin
+      $dumpfile(vcd_file);
+    end else begin
+      $dumpfile("sim_output.vcd");
+    end
     $dumpvars(0, tb_top_led);
-
-    has_test_filter       = $value$plusargs("TEST=%s", test_name);
-
-    cfg_run_reset         = !has_test_filter || (test_name == "test_reset");
-    cfg_run_reset_disable = !has_test_filter || (test_name == "test_reset_disable");
-    cfg_run_enable        = !has_test_filter || (test_name == "test_enable");
-    cfg_run_clock         = !has_test_filter || (test_name == "test_clock");
-    cfg_run_limit         = !has_test_filter || (test_name == "test_limit");
-    cfg_run_random_limit  = !has_test_filter || (test_name == "test_random_limit");
-    cfg_run_led           = !has_test_filter || (test_name == "test_led");
-
-    $display("--- Running Main Test Suite ---");
-
-    if (cfg_run_reset) begin
-      test_id = 1;
-      test_reset();
-      repeat (2) @(posedge i_clock);
-    end
-
-    if (cfg_run_reset_disable) begin
-      test_id = 2;
-      test_reset_disable();
-      repeat (2) @(posedge i_clock);
-    end
-
-    if (cfg_run_enable) begin
-      test_id = 3;
-      test_enable();
-      repeat (2) @(posedge i_clock);
-    end
-
-    if (cfg_run_clock) begin
-      test_id = 4;
-      test_random_shift();
-      repeat (2) @(posedge i_clock);
-    end
-
-    if (cfg_run_limit) begin
-      test_id = 5;
-      test_limit();
-      repeat (2) @(posedge i_clock);
-    end
-
-    if (cfg_run_random_limit) begin
-      test_id = 6;
-      test_random_limit();
-      repeat (2) @(posedge i_clock);
-    end
-
-    if (cfg_run_led) begin
-      test_id = 7;
-      test_led();
-      repeat (2) @(posedge i_clock);
-    end
-
-    test_id = 0;
-    $display("--- All Tests Completed ---");
-    $finish;
   end
 
+  `include "tests/macros.svh"
+`ifdef COMBINED_TESTS
+  `include "tests/combined_tests.svh"
+`else
+  `include "current_test.svh"
+`endif
 endmodule
+
